@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromptWhiz – AI Prompt Generator for ChatGPT & MidJourney</title>
+    <meta name="description" content="Generate high-quality prompts instantly for ChatGPT, MidJourney, DALL·E & more. 100% free, responsive & frontend-only.">
+    <meta name="keywords" content="AI prompt generator, ChatGPT prompts, MidJourney prompts, DALL·E prompts, AI writing prompts">
+    <meta name="author" content="PromptWhiz">
+    <link rel="canonical" href="https://promptwhiz.example.com">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- CSS & JS Libraries -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--dark);
+            background-color: #f8fafc;
+            overflow-x: hidden;
+        }
+        
+        .heading-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, var(--primary), #7c3aed);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+        }
+        
+        .prompt-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .prompt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--dark);
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        /* Mobile menu animation */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        
+        /* Pulse animation for CTA */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+        
+        .category-btn {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .category-btn.active {
+            animation: glow 2s infinite;
+        }
+        
+        @keyframes glow {
+            0% {
+                box-shadow: 0 0 5px rgba(79, 70, 229, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(79, 70, 229, 0.8);
+            }
+            100% {
+                box-shadow: 0 0 5px rgba(79, 70, 229, 0.5);
+            }
+        }
+        
+        .category-btn.chatgpt.active {
+            animation: glowChatGPT 2s infinite;
+        }
+        
+        .category-btn.midjourney.active {
+            animation: glowMidjourney 2s infinite;
+        }
+        
+        .category-btn.dalle.active {
+            animation: glowDalle 2s infinite;
+        }
+        
+        .category-btn.writing.active {
+            animation: glowWriting 2s infinite;
+        }
+        
+        .category-btn.coding.active {
+            animation: glowCoding 2s infinite;
+        }
+        
+        .category-btn.others.active {
+            animation: glowOthers 2s infinite;
+        }
+        
+        @keyframes glowChatGPT {
+            0% { box-shadow: 0 0 5px rgba(79, 70, 229, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(79, 70, 229, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(79, 70, 229, 0.5); }
+        }
+        
+        @keyframes glowMidjourney {
+            0% { box-shadow: 0 0 5px rgba(147, 51, 234, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(147, 51, 234, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(147, 51, 234, 0.5); }
+        }
+        
+        @keyframes glowDalle {
+            0% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(37, 99, 235, 0.5); }
+        }
+        
+        @keyframes glowWriting {
+            0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.5); }
+        }
+        
+        @keyframes glowCoding {
+            0% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.5); }
+        }
+        
+        @keyframes glowOthers {
+            0% { box-shadow: 0 0 5px rgba(234, 179, 8, 0.5); }
+            50% { box-shadow: 0 0 20px rgba(234, 179, 8, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(234, 179, 8, 0.5); }
+        }
+        
+        /* Enhanced AI Progress Bar Animation */
+        .ai-progress-container {
+            width: 100%;
+            height: 4px;
+            background: #f3f4f6;
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            margin: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ai-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, 
+                #4f46e5 0%, 
+                #7c3aed 25%, 
+                #3b82f6 50%, 
+                #7c3aed 75%, 
+                #4f46e5 100%
+            );
+            background-size: 200% 100%;
+            animation: progress-animation 2s linear infinite, 
+                       shimmer 1.5s ease-in-out infinite,
+                       pulse 2s ease-in-out infinite;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        @keyframes progress-animation {
+            0% {
+                transform: scaleX(0);
+            }
+            50% {
+                transform: scaleX(0.5);
+            }
+            100% {
+                transform: scaleX(1);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+
+        .ai-thinking {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .ai-thinking i {
+            animation: thinking 1.5s ease-in-out infinite, 
+                       rotate 3s linear infinite;
+            color: #4f46e5;
+        }
+
+        @keyframes thinking {
+            0%, 100% { 
+                transform: translateY(0) scale(1);
+            }
+            50% { 
+                transform: translateY(-3px) scale(1.1);
+            }
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced prompt result animations */
+        #prompt-text {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Enhanced button animations */
+        .btn-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-hover::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease-out, height 0.6s ease-out;
+        }
+
+        .btn-hover:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-hover:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Enhanced category button animations */
+        .category-btn {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .category-btn:hover::before {
+            left: 100%;
+        }
+
+        .category-btn.active {
+            animation: glow 2s infinite, scale 0.3s ease-out;
+        }
+
+        @keyframes scale {
+            from {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        /* Enhanced copy button animation */
+        #copy-btn {
+            transition: all 0.3s ease;
+        }
+
+        #copy-btn:hover {
+            transform: rotate(15deg) scale(1.1);
+        }
+
+        #copy-btn i {
+            transition: all 0.3s ease;
+        }
+
+        #copy-btn:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Enhanced regenerate button animation */
+        #regenerate-btn i {
+            animation: spin 2s linear infinite;
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading dots animation */
+        .loading-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .loading-dots span {
+            width: 4px;
+            height: 4px;
+            background: #4f46e5;
+            border-radius: 50%;
+            animation: dots 1.4s infinite;
+        }
+
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes dots {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-4px);
+            }
+        }
+
+        /* Mobile-Specific Enhancements */
+        @media (max-width: 768px) {
+            /* Hide non-essential elements on mobile */
+            #home, #features, #testimonials, #faq, .mobile-nav, .share-sheet, .mobile-header {
+                display: none !important;
+            }
+
+            /* Mobile Container */
+            .container {
+                padding: 0;
+                margin: 0;
+                width: 100%;
+            }
+
+            /* Mobile Generator Section */
+            #generator {
+                padding: 1rem;
+                min-height: 100vh;
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+                display: flex;
+                flex-direction: column;
+            }
+
+            /* Mobile Category Selection */
+            .category-scroll {
+                display: flex;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x mandatory;
+                gap: 0.75rem;
+                padding: 1rem 0.5rem;
+                margin: 0 -0.5rem;
+                scrollbar-width: none;
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            .category-scroll::-webkit-scrollbar {
+                display: none;
+            }
+
+            .category-btn {
+                scroll-snap-align: center;
+                flex: 0 0 auto;
+                white-space: nowrap;
+                padding: 0.75rem 1.25rem;
+                font-size: 0.875rem;
+                border-radius: 1rem;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            .category-btn:active {
+                transform: scale(0.95);
+            }
+
+            /* Mobile Prompt Container */
+            #prompt-container {
+                margin: 1rem 0;
+                border-radius: 1rem;
+                border: none;
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                padding: 1rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            /* Mobile Textarea */
+            #user-input {
+                border-radius: 0.75rem;
+                padding: 0.75rem;
+                font-size: 1rem;
+                line-height: 1.5;
+                resize: none;
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            /* Mobile Generate Button */
+            #generate-btn {
+                width: 100%;
+                padding: 1rem;
+                border-radius: 1rem;
+                font-size: 1rem;
+                margin-top: 1rem;
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            #generate-btn:active {
+                transform: scale(0.98);
+            }
+
+            /* Mobile Result Container */
+            #prompt-result {
+                margin-top: 1rem;
+                padding: 1rem;
+                border-radius: 1rem;
+                background: rgba(255, 255, 255, 0.9);
+                backdrop-filter: blur(10px);
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            /* Mobile Loading Animation */
+            .ai-progress-container {
+                margin: 0.75rem 0;
+                height: 3px;
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            .ai-progress-bar {
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            /* Mobile Action Buttons */
+            .prompt-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                justify-content: flex-end;
+                align-items: center;
+            }
+
+            .action-buttons {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            .action-btn {
+                flex: 1;
+                padding: 0.75rem;
+                border-radius: 0.75rem;
+                font-size: 0.875rem;
+                will-change: transform;
+                transform: translateZ(0);
+            }
+
+            .action-btn:active {
+                transform: scale(0.95);
+            }
+
+            /* Smooth Scrolling */
+            html {
+                scroll-behavior: smooth;
+            }
+
+            /* Optimize Animations */
+            * {
+                -webkit-tap-highlight-color: transparent;
+            }
+
+            /* Prevent Text Selection */
+            .category-btn, .action-btn, #generate-btn {
+                user-select: none;
+                -webkit-user-select: none;
+            }
+
+            /* Optimize Touch Response */
+            .category-btn, .action-btn, #generate-btn {
+                touch-action: manipulation;
+            }
+        }
+
+        /* Update mobile styles */
+        @media (max-width: 768px) {
+            /* Hide only menu in header, keep app name */
+            header nav, #mobile-menu-button, #mobile-menu {
+                display: none !important;
+            }
+
+            /* Keep header with just app name */
+            header {
+                display: block !important;
+                padding: 0.5rem 1rem;
+                background: transparent;
+                box-shadow: none;
+            }
+
+            /* Hide footer in mobile */
+            footer {
+                display: none !important;
+            }
+
+            /* Adjust generator section padding */
+            #generator {
+                padding-top: 0.5rem;
+            }
+
+            /* Adjust prompt actions layout */
+            .prompt-actions {
+                display: flex;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                justify-content: flex-end;
+                align-items: center;
+            }
+
+            /* Style action buttons container */
+            .action-buttons {
+                display: flex;
+                gap: 0.5rem;
+                align-items: center;
+            }
+
+            /* Style regenerate and share buttons */
+            #regenerate-btn,
+            button[onclick="sharePrompt()"] {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1rem;
+                border-radius: 0.75rem;
+                font-size: 0.875rem;
+                background: #f3f4f6;
+                color: #4f46e5;
+                transition: all 0.3s ease;
+            }
+
+            /* Style copy button */
+            #copy-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 0.75rem;
+                background: #f3f4f6;
+                color: #4f46e5;
+                transition: all 0.3s ease;
+                margin: 0;
+            }
+
+            #copy-btn i {
+                font-size: 1rem;
+            }
+
+            /* Active states for buttons */
+            #regenerate-btn:active,
+            #copy-btn:active,
+            button[onclick="sharePrompt()"]:active {
+                transform: scale(0.95);
+            }
+
+            /* Adjust copy button position */
+            #copy-btn {
+                position: static;
+                margin-left: 0.5rem;
+            }
+
+            /* Hide tooltip in mobile */
+            .tooltip-text {
+                display: none;
+            }
+        }
+    </style>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "PromptWhiz",
+        "url": "https://promptwhiz.example.com",
+        "description": "Generate high-quality AI prompts instantly for ChatGPT, MidJourney, DALL·E and other AI tools.",
+        "applicationCategory": "Productivity",
+        "operatingSystem": "Any",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "creator": {
+            "@type": "Organization",
+            "name": "PromptWhiz"
+        }
+    }
+    </script>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-XXXXXXXXXX');
+    </script>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <!-- Logo -->
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center mr-3">
+                        <i class="fas fa-bolt text-white"></i>
+                    </div>
+                    <a href="#" class="text-2xl font-bold heading-font gradient-text">PromptWhiz</a>
+                </div>
+                
+                <!-- Desktop Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-700 hover:text-indigo-600 font-medium transition">Home</a>
+                    <a href="#generator" class="text-gray-700 hover:text-indigo-600 font-medium transition">Generator</a>
+                    <a href="#features" class="text-gray-700 hover:text-indigo-600 font-medium transition">Features</a>
+                    <a href="#testimonials" class="text-gray-700 hover:text-indigo-600 font-medium transition">Testimonials</a>
+                    <a href="#faq" class="text-gray-700 hover:text-indigo-600 font-medium transition">FAQ</a>
+                </nav>
+                
+                <!-- Mobile Menu Button - Hide in mobile view -->
+                <button id="mobile-menu-button" class="hidden md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Menu - Hide in mobile view -->
+            <div id="mobile-menu" class="hidden mobile-menu md:hidden">
+                <div class="px-2 pt-2 pb-4 space-y-1">
+                    <a href="#home" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Home</a>
+                    <a href="#generator" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Generator</a>
+                    <a href="#features" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Features</a>
+                    <a href="#testimonials" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">Testimonials</a>
+                    <a href="#faq" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-indigo-600 hover:bg-gray-50">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-16 md:py-24 bg-gradient-to-br from-indigo-50 to-purple-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0" data-aos="fade-right">
+                    <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight heading-font">
+                        Generate <span class="gradient-text">AI Prompts</span> Like a Pro
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 max-w-lg">
+                        Create perfect prompts for ChatGPT, MidJourney, DALL·E and other AI tools in seconds. No signup required.
+                    </p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <a href="#generator" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-semibold text-white text-center transition btn-hover pulse">
+                            <i class="fas fa-bolt mr-2"></i> Generate Prompt Now
+                        </a>
+                        <a href="#features" class="px-8 py-4 bg-white hover:bg-gray-100 rounded-lg font-semibold text-gray-800 text-center transition btn-hover shadow-sm">
+                            <i class="fas fa-star mr-2"></i> Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2" data-aos="fade-left">
+                    <div class="bg-white rounded-xl shadow-xl overflow-hidden prompt-card">
+                        <div class="p-6 bg-gradient-to-r from-indigo-500 to-purple-600">
+                            <h3 class="text-xl font-semibold text-white">Example AI Prompt</h3>
+                        </div>
+                        <div class="p-6">
+                            <p class="text-gray-700 mb-4">"A futuristic cityscape at sunset, cyberpunk style, neon lights reflecting on wet streets, highly detailed 8K render with cinematic lighting, artstation trending."</p>
+                            <div class="flex justify-between items-center">
+                                <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full">MidJourney</span>
+                                <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium transition">
+                                    <i class="fas fa-copy mr-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Generator Section -->
+    <section id="generator" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4 heading-font">AI Prompt Generator</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Select a category and generate high-quality prompts instantly
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="flex flex-wrap justify-center gap-3 mb-8" data-aos="fade-up">
+                    <button onclick="selectCategory('chatgpt')" class="category-btn chatgpt px-6 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-full font-medium text-white transition btn-hover">
+                        <i class="fas fa-comment-dots mr-2"></i> ChatGPT
+                    </button>
+                    <button onclick="selectCategory('midjourney')" class="category-btn midjourney px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-full font-medium text-white transition btn-hover">
+                        <i class="fas fa-image mr-2"></i> MidJourney
+                    </button>
+                    <button onclick="selectCategory('dalle')" class="category-btn dalle px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-full font-medium text-white transition btn-hover">
+                        <i class="fas fa-paint-brush mr-2"></i> DALL·E
+                    </button>
+                    <button onclick="selectCategory('writing')" class="category-btn writing px-6 py-3 bg-green-600 hover:bg-green-700 rounded-full font-medium text-white transition btn-hover">
+                        <i class="fas fa-pen-fancy mr-2"></i> Writing
+                    </button>
+                    <button onclick="selectCategory('coding')" class="category-btn coding px-6 py-3 bg-red-600 hover:bg-red-700 rounded-full font-medium text-white transition btn-hover">
+                        <i class="fas fa-code mr-2"></i> Coding
+                    </button>
+                    <button onclick="selectCategory('others')" class="category-btn others px-6 py-3 bg-yellow-600 hover:bg-yellow-700 rounded-full font-medium text-white transition btn-hover">
+                        <i class="fas fa-plus mr-2"></i> Others
+                    </button>
+                </div>
+                
+                <div id="prompt-container" class="bg-white border border-gray-200 rounded-xl shadow-sm p-6 min-h-48 flex flex-col justify-center items-center" data-aos="fade-up">
+                    <div class="w-full mb-4">
+                        <textarea id="user-input" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300" rows="3" placeholder="Select a category above to start..."></textarea>
+                    </div>
+                    <p id="prompt-placeholder" class="text-gray-500 text-center">Select a category above to start generating prompts</p>
+                    <div id="prompt-result" class="hidden w-full">
+                        <div class="flex justify-between items-start mb-4">
+                            <span id="prompt-category" class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full"></span>
+                            <!-- Remove the copy button from here -->
+                        </div>
+                        <div id="prompt-loading" class="hidden">
+                            <div class="ai-thinking">
+                                <i class="fas fa-brain"></i>
+                                <span>AI is crafting your perfect prompt</span>
+                                <div class="loading-dots">
+                                    <span></span>
+                                    <span></span>
+                                    <span></span>
+                                </div>
+                            </div>
+                            <div class="ai-progress-container">
+                                <div class="ai-progress-bar"></div>
+                            </div>
+                        </div>
+                        <p id="prompt-text" class="text-gray-700 mb-6 fade-in"></p>
+                        <div class="flex justify-end space-x-3">
+                            <div class="action-buttons">
+                                <button id="regenerate-btn" onclick="regeneratePrompt()" class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 text-indigo-700 rounded-lg text-sm font-medium transition btn-hover">
+                                    <i class="fas fa-sync-alt mr-1"></i> Regenerate
+                                </button>
+                                <button id="copy-btn" class="p-2 text-gray-500 hover:text-indigo-600 rounded-full transition tooltip">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="tooltip-text">Copy to clipboard</span>
+                                </button>
+                                <button onclick="sharePrompt()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-sm font-medium transition btn-hover">
+                                    <i class="fas fa-share-alt mr-1"></i> Share
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 text-center" data-aos="fade-up">
+                    <button id="generate-btn" onclick="generatePromptFromInput()" class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 rounded-lg font-medium text-white transition btn-hover opacity-50 cursor-not-allowed" disabled>
+                        <i class="fas fa-bolt mr-2"></i> Generate Prompt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4 heading-font">Why Choose PromptWhiz</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Powerful features to enhance your AI experience
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-xl shadow-sm p-8 prompt-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-bolt text-indigo-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Instant Generation</h3>
+                    <p class="text-gray-600">Get high-quality AI prompts instantly with just one click. No waiting, no signups required.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-8 prompt-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="w-14 h-14 rounded-full bg-purple-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-layer-group text-purple-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Multiple Categories</h3>
+                    <p class="text-gray-600">Choose from specialized categories for ChatGPT, MidJourney, DALL·E, writing, coding and more.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-8 prompt-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-clipboard text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">One-Click Copy</h3>
+                    <p class="text-gray-600">Copy prompts to your clipboard instantly with our optimized copy button. No formatting issues.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-8 prompt-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-mobile-alt text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Fully Responsive</h3>
+                    <p class="text-gray-600">Works perfectly on all devices - desktop, tablet and mobile. Generate prompts anywhere.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-8 prompt-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-lock text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Privacy Focused</h3>
+                    <p class="text-gray-600">No tracking, no ads, no data collection. Your prompts stay private on your device.</p>
+                </div>
+                
+                <div class="bg-white rounded-xl shadow-sm p-8 prompt-card" data-aos="fade-up" data-aos-delay="600">
+                    <div class="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center mb-6">
+                        <i class="fas fa-star text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3">Free Forever</h3>
+                    <p class="text-gray-600">100% free with no hidden costs. We believe in making AI accessible to everyone.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-16 md:py-24 bg-white">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4 heading-font">What Our Users Say</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Don't just take our word for it - hear from our community
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 rounded-xl p-8" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-indigo-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Sarah K.</h4>
+                            <p class="text-sm text-gray-500">Content Creator</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"PromptWhiz has revolutionized my content creation workflow. The ChatGPT prompts help me generate ideas faster than ever before."</p>
+                    <div class="flex">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-xl p-8" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-purple-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Mike T.</h4>
+                            <p class="text-sm text-gray-500">Digital Artist</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"The MidJourney prompts from PromptWhiz consistently produce stunning results. I've discovered styles I never would have thought to try."</p>
+                    <div class="flex">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 rounded-xl p-8" data-aos="fade-up" data-aos-delay="300">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Lisa M.</h4>
+                            <p class="text-sm text-gray-500">Developer</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 mb-4">"As a developer, I use the coding prompts daily to explain complex concepts simply. It's become an essential part of my documentation process."</p>
+                    <div class="flex">
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star text-yellow-400"></i>
+                        <i class="fas fa-star-half-alt text-yellow-400"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 md:py-24 bg-gray-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-aos="fade-up">
+                <h2 class="text-3xl sm:text-4xl font-bold mb-4 heading-font">Frequently Asked Questions</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Get answers to common questions about PromptWhiz
+                </p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-xl shadow-sm overflow-hidden" data-aos="fade-up">
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question flex justify-between items-center w-full px-6 py-5 text-left font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                            <span>What is PromptWhiz?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-4 bg-gray-50 hidden">
+                            <p class="text-gray-600">PromptWhiz is a free online tool that helps you generate high-quality prompts for various AI systems like ChatGPT, MidJourney, and DALL·E. It provides carefully crafted prompt templates that produce better results than generic prompts.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question flex justify-between items-center w-full px-6 py-5 text-left font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                            <span>Is PromptWhiz really free?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-4 bg-gray-50 hidden">
+                            <p class="text-gray-600">Yes! PromptWhiz is 100% free to use with no hidden costs. We believe in making AI tools accessible to everyone. There are no premium features or paywalls - everything is available to all users.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question flex justify-between items-center w-full px-6 py-5 text-left font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                            <span>Do I need to create an account?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-4 bg-gray-50 hidden">
+                            <p class="text-gray-600">No account or signup is required. PromptWhiz works entirely in your browser with no backend server, so you can start generating prompts immediately without providing any personal information.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question flex justify-between items-center w-full px-6 py-5 text-left font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                            <span>How do the prompts help?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-4 bg-gray-50 hidden">
+                            <p class="text-gray-600">Our prompts are designed by AI experts to include the right keywords, structure, and specificity that each AI system responds best to. This results in higher quality outputs compared to generic prompts you might come up with on your own.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question flex justify-between items-center w-full px-6 py-5 text-left font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                            <span>Can I suggest new prompt categories?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-4 bg-gray-50 hidden">
+                            <p class="text-gray-600">Absolutely! We welcome suggestions for new prompt categories or improvements to existing ones. You can contact us through the website footer with your ideas.</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <button class="faq-question flex justify-between items-center w-full px-6 py-5 text-left font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition">
+                            <span>Is my data private?</span>
+                            <i class="fas fa-chevron-down transition-transform duration-200"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-4 bg-gray-50 hidden">
+                            <p class="text-gray-600">Yes, PromptWhiz is designed with privacy in mind. All prompt generation happens locally in your browser - we don't store your prompts or track your usage. There are no ads or analytics trackers on our site.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-16 md:py-24 bg-gradient-to-r from-indigo-600 to-purple-600">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center" data-aos="fade-up">
+            <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6 heading-font">Ready to Boost Your AI Experience?</h2>
+            <p class="text-xl text-indigo-100 mb-8 max-w-3xl mx-auto">
+                Generate your first high-quality AI prompt in seconds - no signup required.
+            </p>
+            <a href="#generator" class="inline-block px-8 py-4 bg-white hover:bg-gray-100 rounded-lg font-semibold text-indigo-600 transition btn-hover">
+                <i class="fas fa-bolt mr-2"></i> Try PromptWhiz Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center mr-3">
+                            <i class="fas fa-bolt text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-white heading-font">PromptWhiz</h3>
+                    </div>
+                    <p class="mb-4">The ultimate AI prompt generator for ChatGPT, MidJourney, and DALL·E.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition">
+                            <i class="fab fa-product-hunt"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Categories</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#generator" class="hover:text-white transition">ChatGPT Prompts</a></li>
+                        <li><a href="#generator" class="hover:text-white transition">MidJourney Prompts</a></li>
+                        <li><a href="#generator" class="hover:text-white transition">DALL·E Prompts</a></li>
+                        <li><a href="#generator" class="hover:text-white transition">Writing Prompts</a></li>
+                        <li><a href="#generator" class="hover:text-white transition">Coding Prompts</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Resources</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="hover:text-white transition">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition">API</a></li>
+                        <li><a href="#" class="hover:text-white transition">Community</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contribute</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-4">Legal</h4>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition">Cookie Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">GDPR</a></li>
+                        <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p>© 2023 PromptWhiz. All rights reserved.</p>
+                <div class="mt-4 md:mt-0">
+                    <p>Made with <i class="fas fa-heart text-red-400"></i> for the AI community</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="back-to-top" class="fixed bottom-8 right-8 w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-lg flex items-center justify-center transition opacity-0 invisible">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav md:hidden">
+        <button class="mobile-nav-btn active" onclick="scrollToSection('generator')">
+            <i class="fas fa-bolt"></i>
+            <span>Generate</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="scrollToSection('features')">
+            <i class="fas fa-star"></i>
+            <span>Features</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="scrollToSection('testimonials')">
+            <i class="fas fa-comment"></i>
+            <span>Reviews</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="scrollToSection('faq')">
+            <i class="fas fa-question"></i>
+            <span>FAQ</span>
+        </button>
+    </nav>
+
+    <!-- Mobile Share Sheet -->
+    <div class="share-sheet">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Share Prompt</h3>
+            <button onclick="toggleShareSheet()" class="p-2">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="share-options">
+            <button class="share-option" onclick="shareToTwitter()">
+                <i class="fab fa-twitter"></i>
+                <span>Twitter</span>
+            </button>
+            <button class="share-option" onclick="shareToFacebook()">
+                <i class="fab fa-facebook"></i>
+                <span>Facebook</span>
+            </button>
+            <button class="share-option" onclick="shareToWhatsApp()">
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+            </button>
+            <button class="share-option" onclick="copyToClipboard()">
+                <i class="fas fa-link"></i>
+                <span>Copy Link</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('open');
+            mobileMenuButton.innerHTML = mobileMenu.classList.contains('open') 
+                ? '<i class="fas fa-times text-2xl"></i>' 
+                : '<i class="fas fa-bars text-2xl"></i>';
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.remove('open');
+                mobileMenuButton.innerHTML = '<i class="fas fa-bars text-2xl"></i>';
+            });
+        });
+        
+        // FAQ accordion
+        document.querySelectorAll('.faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                
+                // Toggle answer visibility
+                answer.classList.toggle('hidden');
+                
+                // Rotate icon
+                icon.classList.toggle('rotate-180');
+                
+                // Close other answers
+                document.querySelectorAll('.faq-question').forEach(q => {
+                    if (q !== question) {
+                        q.nextElementSibling.classList.add('hidden');
+                        q.querySelector('i').classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+        
+        // Back to top button
+        const backToTopButton = document.getElementById('back-to-top');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.remove('opacity-0', 'invisible');
+                backToTopButton.classList.add('opacity-100', 'visible');
+            } else {
+                backToTopButton.classList.remove('opacity-100', 'visible');
+                backToTopButton.classList.add('opacity-0', 'invisible');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // AI Prompt Generator Logic
+        const prompts = {
+            chatgpt: [
+                "Act as a professional copywriter and write a compelling product description for [Product Name] that highlights its key features: [Feature 1], [Feature 2], and [Feature 3]. Focus on benefits rather than just specifications.",
+                "Explain the concept of [Complex Topic] in simple terms that a 10-year-old could understand. Use analogies and examples to make it relatable.",
+                "You are a historian specializing in [Historical Period]. Provide a detailed analysis of [Historical Event], including its causes, key figures, and long-term impacts on society.",
+                "As a nutritionist, create a 7-day meal plan for someone with [Dietary Requirement] that meets all their nutritional needs. Include breakfast, lunch, dinner, and snacks.",
+                "Write a persuasive email to convince potential customers to try our new [Product/Service]. Highlight the unique value proposition and include a strong call-to-action."
+            ],
+            midjourney: [
+                "A futuristic cityscape at sunset, cyberpunk style, neon lights reflecting on wet streets, highly detailed 8K render with cinematic lighting, artstation trending.",
+                "Portrait of an elven queen with intricate silver jewelry and glowing blue eyes, fantasy art, highly detailed digital painting, artstation, greg rutkowski style.",
+                "A steampunk airship flying through clouds, intricate brass details, Jules Verne inspired, cinematic lighting, ultra-detailed, trending on artstation.",
+                "A mystical forest with bioluminescent plants and floating orbs of light, dreamlike atmosphere, vibrant colors, highly detailed digital painting.",
+                "A cybernetic tiger in a neon-lit alley, cyberpunk aesthetic, rain effects, cinematic composition, 8K ultra-detailed render, trending on artstation."
+            ],
+            dalle: [
+                "A painting of a cat astronaut in space, wearing a tiny space helmet, floating among planets and stars, digital art, vibrant colors.",
+                "An isometric illustration of a cozy cabin in the woods during winter, smoke coming from the chimney, warm lights in the windows, digital art.",
+                "A surreal landscape with floating islands and waterfalls flowing upwards, dreamlike atmosphere, vibrant colors, digital painting.",
+                "A close-up of a robot's face showing human-like emotions, intricate mechanical details, soft lighting, cinematic, digital art.",
+                "A bowl of soup that looks like a galaxy, stars and nebulae visible in the broth, hyper-realistic, 8K, trending on artstation."
+            ],
+            writing: [
+                "Write a short story (500-700 words) about a [Character Description] who discovers [Unusual Situation]. Include vivid descriptions and character development.",
+                "Compose a poem about [Theme or Subject] using [Poetic Form]. Incorporate sensory details and emotional resonance.",
+                "Create a list of 10 attention-grabbing headlines for an article about [Topic]. Make them intriguing but not clickbaity.",
+                "Draft a 300-word blog post introduction about [Topic] that hooks the reader immediately and explains why this topic matters.",
+                "Write a Twitter thread explaining 5 surprising facts about [Topic]. Make it engaging and easy to follow with numbered points."
+            ],
+            coding: [
+                "Write a [Programming Language] function that takes [Input] and returns [Output]. Include error handling and edge cases.",
+                "Explain the concept of [Programming Concept] in simple terms with code examples. Compare it to similar concepts.",
+                "Create a [Framework] component that implements [Feature]. Include props, state management, and styling.",
+                "Write a SQL query that [Task]. Optimize it for performance on large datasets.",
+                "Debug this [Language] code that's supposed to [Function] but isn't working. Explain the fixes."
+            ]
+        };
+        
+        // DeepSeek API Integration
+        async function generateCustomPrompt(category, userInput) {
+            try {
+                let systemPrompt = '';
+                let userPrompt = '';
+                
+                // Set specific system prompts based on category
+                switch(category) {
+                    case 'chatgpt':
+                        systemPrompt = "You are an expert ChatGPT prompt engineer. Generate a powerful, highly detailed prompt that will achieve exceptional results. Focus on specificity, context, and desired output format. Include key elements: role definition, task scope, output format, and quality criteria. Keep it concise but comprehensive. Do not include meta-commentary.";
+                        userPrompt = `Generate a powerful prompt that will: ${userInput}. Focus on role, task, format, and quality criteria.`;
+                        break;
+                    case 'midjourney':
+                        systemPrompt = "You are an expert MidJourney prompt engineer. Generate a detailed prompt with specific artistic elements: style, lighting, composition, camera angle, materials, textures, and technical parameters. Include quality boosters and artistic references. Focus on visual impact and technical precision.";
+                        userPrompt = `Generate a detailed image prompt that will: ${userInput}. Include style, lighting, composition, and technical parameters.`;
+                        break;
+                    case 'dalle':
+                        systemPrompt = "You are an expert DALL·E prompt engineer. Generate a precise prompt with specific visual elements: style, composition, lighting, materials, and artistic direction. Include quality parameters and visual references. Focus on clarity and artistic impact.";
+                        userPrompt = `Generate a precise image prompt that will: ${userInput}. Include style, composition, and artistic direction.`;
+                        break;
+                    case 'writing':
+                        systemPrompt = "You are an expert writing prompt engineer. Generate a detailed prompt with specific elements: genre, tone, structure, character development, and narrative elements. Include quality criteria and creative constraints. Focus on engagement and originality.";
+                        userPrompt = `Generate a detailed writing prompt that will: ${userInput}. Include genre, tone, and narrative elements.`;
+                        break;
+                    case 'coding':
+                        systemPrompt = "You are an expert coding prompt engineer. Generate a precise prompt with specific requirements: functionality, architecture, performance criteria, and technical constraints. Include best practices and optimization guidelines. Focus on efficiency and maintainability.";
+                        userPrompt = `Generate a precise coding prompt that will: ${userInput}. Include functionality, architecture, and technical requirements.`;
+                        break;
+                    case 'others':
+                        systemPrompt = "You are an expert prompt engineer. Generate a powerful prompt with specific elements: context, requirements, quality criteria, and desired outcomes. Include relevant constraints and success metrics. Focus on effectiveness and precision.";
+                        userPrompt = `Generate a powerful prompt that will: ${userInput}. Include context, requirements, and success criteria.`;
+                        break;
+                }
+
+                const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek/deepseek-prover-v2:free",
+                        messages: [
+                            {
+                                role: "system",
+                                content: systemPrompt
+                            },
+                            {
+                                role: "user",
+                                content: userPrompt
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 150,
+                        top_p: 0.9,
+                        frequency_penalty: 0.3,
+                        presence_penalty: 0.3
+                    })
+                });
+
+                const data = await response.json();
+                return data.choices[0].message.content;
+            } catch (error) {
+                console.error('Error generating prompt:', error);
+                return "Sorry, there was an error generating your prompt. Please try again.";
+            }
+        }
+        
+        // Modified category selection function
+        function selectCategory(category) {
+            // Remove active class from all buttons
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-indigo-700', 'bg-purple-700', 'bg-blue-700', 'bg-green-700', 'bg-red-700', 'bg-yellow-700');
+                btn.classList.add(`bg-${btn.classList[3].split('-')[1]}-600`);
+            });
+            
+            // Add active class to selected button
+            const selectedBtn = document.querySelector(`.category-btn.${category}`);
+            selectedBtn.classList.remove(`bg-${selectedBtn.classList[3].split('-')[1]}-600`);
+            selectedBtn.classList.add(`bg-${selectedBtn.classList[3].split('-')[1]}-700`, 'active');
+            
+            // Update textarea placeholder and enable it
+            const textarea = document.getElementById('user-input');
+            textarea.placeholder = `Describe what kind of ${category} prompt you want to generate...`;
+            textarea.classList.add('ring-2', 'ring-indigo-500');
+            textarea.focus();
+            
+            // Enable generate button
+            const generateBtn = document.getElementById('generate-btn');
+            generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            generateBtn.disabled = false;
+            
+            // Store selected category
+            window.selectedCategory = category;
+            
+            // Reset prompt result if category changes
+            if (document.getElementById('prompt-result').classList.contains('hidden') === false) {
+                document.getElementById('prompt-result').classList.add('hidden');
+                document.getElementById('prompt-placeholder').classList.remove('hidden');
+                document.getElementById('prompt-text').textContent = '';
+            }
+        }
+
+        // Modified button click handlers
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.onclick = function() {
+                const category = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+                selectCategory(category);
+            };
+        });
+
+        // New function to generate prompt from input
+        async function generatePromptFromInput() {
+            const category = window.selectedCategory;
+            const userInput = document.getElementById('user-input').value.trim();
+            
+            if (!category) {
+                alert('Please select a category first');
+                return;
+            }
+            
+            if (!userInput) {
+                alert('Please describe what kind of prompt you want to generate');
+                return;
+            }
+            
+            // Display prompt with animation
+            document.getElementById('prompt-placeholder').classList.add('hidden');
+            document.getElementById('prompt-result').classList.remove('hidden');
+            
+            // Show loading state
+            document.getElementById('prompt-loading').classList.remove('hidden');
+            document.getElementById('prompt-text').classList.add('hidden');
+            
+            // Set category badge immediately
+            const categoryBadge = document.getElementById('prompt-category');
+            categoryBadge.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+            categoryBadge.className = 'px-3 py-1 text-sm font-medium rounded-full';
+            
+            // Set color based on category
+            switch(category) {
+                case 'chatgpt':
+                    categoryBadge.classList.add('bg-indigo-100', 'text-indigo-800');
+                    break;
+                case 'midjourney':
+                    categoryBadge.classList.add('bg-purple-100', 'text-purple-800');
+                    break;
+                case 'dalle':
+                    categoryBadge.classList.add('bg-blue-100', 'text-blue-800');
+                    break;
+                case 'writing':
+                    categoryBadge.classList.add('bg-green-100', 'text-green-800');
+                    break;
+                case 'coding':
+                    categoryBadge.classList.add('bg-red-100', 'text-red-800');
+                    break;
+                case 'others':
+                    categoryBadge.classList.add('bg-yellow-100', 'text-yellow-800');
+                    break;
+            }
+            
+            try {
+                // Generate custom prompt using DeepSeek API
+                const customPrompt = await generateCustomPrompt(category, userInput);
+                
+                // Hide loading state and show result
+                document.getElementById('prompt-loading').classList.add('hidden');
+                document.getElementById('prompt-text').classList.remove('hidden');
+                document.getElementById('prompt-text').textContent = customPrompt;
+            
+            // Add fade-in effect
+            document.getElementById('prompt-text').classList.add('fade-in');
+            setTimeout(() => {
+                document.getElementById('prompt-text').classList.remove('fade-in');
+            }, 500);
+            } catch (error) {
+                // Handle error state
+                document.getElementById('prompt-loading').classList.add('hidden');
+                document.getElementById('prompt-text').classList.remove('hidden');
+                document.getElementById('prompt-text').textContent = "Sorry, there was an error generating your prompt. Please try again.";
+                document.getElementById('prompt-text').classList.add('text-red-600');
+            }
+        }
+        
+        // Update regenerate function to use the same loading state
+        async function regeneratePrompt() {
+            const category = window.selectedCategory;
+            const userInput = document.getElementById('user-input').value.trim();
+            
+            if (!category) {
+                alert('Please select a category first');
+                return;
+        }
+        
+            if (!userInput) {
+                alert('Please describe what kind of prompt you want to generate');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('prompt-loading').classList.remove('hidden');
+            document.getElementById('prompt-text').classList.add('hidden');
+            
+            try {
+                // Generate new prompt using DeepSeek API
+                const customPrompt = await generateCustomPrompt(category, userInput);
+                
+                // Hide loading state and show result
+                document.getElementById('prompt-loading').classList.add('hidden');
+                document.getElementById('prompt-text').classList.remove('hidden');
+                document.getElementById('prompt-text').textContent = customPrompt;
+                
+                // Add fade-in effect
+                document.getElementById('prompt-text').classList.add('fade-in');
+                setTimeout(() => {
+                    document.getElementById('prompt-text').classList.remove('fade-in');
+                }, 500);
+            } catch (error) {
+                // Handle error state
+                document.getElementById('prompt-loading').classList.add('hidden');
+                document.getElementById('prompt-text').classList.remove('hidden');
+                document.getElementById('prompt-text').textContent = "Sorry, there was an error generating your prompt. Please try again.";
+                document.getElementById('prompt-text').classList.add('text-red-600');
+            }
+        }
+        
+        // Update copy to clipboard function
+        document.getElementById('copy-btn').addEventListener('click', function() {
+            const promptText = document.getElementById('prompt-text').textContent;
+            navigator.clipboard.writeText(promptText).then(() => {
+                const icon = this.querySelector('i');
+                icon.classList.remove('fa-copy');
+                icon.classList.add('fa-check');
+                this.querySelector('.tooltip-text').textContent = 'Copied!';
+                
+                setTimeout(() => {
+                    icon.classList.remove('fa-check');
+                    icon.classList.add('fa-copy');
+                    this.querySelector('.tooltip-text').textContent = 'Copy to clipboard';
+                }, 2000);
+            });
+        });
+        
+        // Share prompt function
+        function sharePrompt() {
+            const promptText = document.getElementById('prompt-text').textContent;
+            const category = document.getElementById('prompt-category').textContent;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: `PromptWhiz ${category} Prompt`,
+                    text: promptText,
+                    url: window.location.href
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(`Check out this ${category} prompt from @PromptWhiz:\n\n"${promptText}"\n\nGenerate your own at ${window.location.href}`)}`;
+                window.open(shareUrl, '_blank');
+            }
+        }
+
+        // Mobile-specific functions
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            section.scrollIntoView({ behavior: 'smooth' });
+            
+            // Update active nav button
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+        }
+
+        function toggleShareSheet() {
+            const shareSheet = document.querySelector('.share-sheet');
+            shareSheet.classList.toggle('visible');
+        }
+
+        // Handle mobile gestures
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left - show next category
+                const categories = document.querySelectorAll('.category-btn');
+                const activeIndex = Array.from(categories).findIndex(btn => btn.classList.contains('active'));
+                if (activeIndex < categories.length - 1) {
+                    categories[activeIndex + 1].click();
+                }
+            } else if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right - show previous category
+                const categories = document.querySelectorAll('.category-btn');
+                const activeIndex = Array.from(categories).findIndex(btn => btn.classList.contains('active'));
+                if (activeIndex > 0) {
+                    categories[activeIndex - 1].click();
+                }
+            }
+        }
+
+        // Share functions
+        function shareToTwitter() {
+            const text = document.getElementById('prompt-text').textContent;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function shareToFacebook() {
+            const url = window.location.href;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function shareToWhatsApp() {
+            const text = document.getElementById('prompt-text').textContent;
+            const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+            window.open(url, '_blank');
+        }
+
+        function copyToClipboard() {
+            const text = document.getElementById('prompt-text').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Prompt copied to clipboard!');
+            });
+        }
+
+        // Hide header on scroll
+        let lastScroll = 0;
+        const header = document.querySelector('.mobile-header');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll <= 0) {
+                header.classList.remove('hidden');
+                return;
+            }
+            
+            if (currentScroll > lastScroll && !header.classList.contains('hidden')) {
+                // Scrolling down
+                header.classList.add('hidden');
+            } else if (currentScroll < lastScroll && header.classList.contains('hidden')) {
+                // Scrolling up
+                header.classList.remove('hidden');
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
+    <!-- SEO Optimization Script -->
+    <script>
+        // SEO Optimization Function
+        async function optimizeSEO() {
+            try {
+                const contentResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek/deepseek-prover-v2:free",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are an expert SEO specialist focused on long-term ranking success."
+                            },
+                            {
+                                role: "user",
+                                content: "Generate top-ranking SEO content for an AI prompt generator website."
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 1500
+                    })
+                });
+
+                if (!contentResponse.ok) {
+                    const errorData = await contentResponse.json();
+                    if (errorData.error?.message?.includes('rate limit') || errorData.error?.message?.includes('quota')) {
+                        alert('Server is currently busy. SEO optimization will resume in 2 hours. Please try again later.');
+                        setTimeout(optimizeSEO, 2 * 60 * 60 * 1000); // Retry after 2 hours
+                        return;
+                    }
+                    throw new Error('Content generation failed');
+                }
+
+                const data = await contentResponse.json();
+                const seoContent = data.choices[0].message.content;
+
+                // Update meta tags
+                updateMetaTags(seoContent);
+                
+                // Schedule next optimization
+                setTimeout(optimizeSEO, 3600000); // Run every hour
+            } catch (error) {
+                console.error('SEO optimization error:', error);
+                // Retry after 5 minutes if failed
+                setTimeout(optimizeSEO, 300000);
+            }
+        }
+
+        function updateMetaTags(seoContent) {
+            try {
+                // Parse SEO content
+                const lines = seoContent.split('\n');
+                let title = '';
+                let description = '';
+                let keywords = '';
+
+                lines.forEach(line => {
+                    if (line.toLowerCase().includes('title:')) {
+                        title = line.split(':')[1].trim();
+                    } else if (line.toLowerCase().includes('description:')) {
+                        description = line.split(':')[1].trim();
+                    } else if (line.toLowerCase().includes('keywords:')) {
+                        keywords = line.split(':')[1].trim();
+                    }
+                });
+
+                // Update meta tags
+                if (title) {
+                    document.title = title;
+                    document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+                }
+                if (description) {
+                    document.querySelector('meta[name="description"]').setAttribute('content', description);
+                    document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+                }
+                if (keywords) {
+                    document.querySelector('meta[name="keywords"]').setAttribute('content', keywords);
+                }
+
+                // Update structured data
+                const structuredData = document.querySelector('script[type="application/ld+json"]');
+                if (structuredData) {
+                    const data = JSON.parse(structuredData.textContent);
+                    data.description = description;
+                    structuredData.textContent = JSON.stringify(data, null, 2);
+                }
+
+                // Log success
+                console.log('SEO optimization completed successfully');
+            } catch (error) {
+                console.error('Error updating meta tags:', error);
+            }
+        }
+
+        // Start SEO optimization when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            optimizeSEO();
+        });
+    </script>
+    <!-- End SEO Optimization Script -->
+    <!-- Enhanced SEO Optimization Script -->
+    <script>
+        // SEO Optimization Function with 24-hour cycle
+        async function optimizeSEO() {
+            try {
+                // Strategy 1: Generate high-ranking content with long-term focus
+                const contentResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek/deepseek-prover-v2:free",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are an expert SEO specialist focused on long-term ranking success. Generate highly optimized content that will achieve and maintain #1 rankings for AI prompt generator keywords. Focus on evergreen content, semantic relevance, and comprehensive topic coverage. Include LSI keywords, long-tail variations, and natural language patterns that signal authority and expertise."
+                            },
+                            {
+                                role: "user",
+                                content: "Generate top-ranking SEO content for an AI prompt generator website that will maintain #1 position. Include title, meta description, keywords, H1, H2 tags, and content structure. Target keywords: AI prompt generator, ChatGPT prompts, MidJourney prompts, DALL·E prompts, prompt engineering. Focus on long-term ranking sustainability."
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 1500
+                    })
+                });
+
+                // Strategy 2: Generate comprehensive semantic keywords
+                const keywordsResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek/deepseek-prover-v2:free",
+                        messages: [
+                            {
+                                role: "system",
+                                content: "You are an expert keyword researcher focused on long-term SEO success. Generate a comprehensive list of high-value, low-competition keywords and their semantic variations for an AI prompt generator website. Focus on keywords that signal authority and expertise."
+                            },
+                            {
+                                role: "user",
+                                content: "Generate semantic keywords and variations for AI prompt generation, focusing on long-tail keywords, user intent, and long-term ranking potential."
+                            }
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 800
+                    })
+                });
+
+                const contentData = await contentResponse.json();
+                const keywordsData = await keywordsResponse.json();
+                
+                // Process and update SEO elements
+                updateSEOElements(contentData.choices[0].message.content, keywordsData.choices[0].message.content);
+                
+                // Schedule next optimization in exactly 24 hours
+                const nextInterval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+                setTimeout(optimizeSEO, nextInterval);
+                
+                // Log optimization time
+                const nextOptimization = new Date(Date.now() + nextInterval);
+                console.log('Next SEO optimization scheduled for:', nextOptimization.toLocaleString());
+            } catch (error) {
+                console.error('SEO optimization error:', error);
+                // Retry after 1 hour if failed
+                setTimeout(optimizeSEO, 3600000);
+            }
+        }
+
+        function updateSEOElements(content, keywords) {
+            try {
+                // Parse content sections
+                const sections = content.split('\n\n');
+                let title = '', description = '', h1 = '', h2s = [], contentText = '';
+                
+                sections.forEach(section => {
+                    if (section.toLowerCase().includes('title:')) {
+                        title = section.split(':')[1].trim();
+                    } else if (section.toLowerCase().includes('meta description:')) {
+                        description = section.split(':')[1].trim();
+                    } else if (section.toLowerCase().includes('h1:')) {
+                        h1 = section.split(':')[1].trim();
+                    } else if (section.toLowerCase().includes('h2:')) {
+                        h2s.push(section.split(':')[1].trim());
+                    } else if (section.toLowerCase().includes('content:')) {
+                        contentText = section.split(':')[1].trim();
+                    }
+                });
+
+                // Update meta tags with enhanced keywords
+                updateMetaTags(title, description, keywords);
+
+                // Update content structure
+                updateContentStructure(h1, h2s, contentText);
+
+                // Update structured data
+                updateStructuredData(title, description, keywords);
+
+                // Add schema markup
+                addSchemaMarkup();
+
+                // Log success
+                console.log('Enhanced SEO optimization completed successfully');
+            } catch (error) {
+                console.error('Error updating SEO elements:', error);
+            }
+        }
+
+        function updateMetaTags(title, description, keywords) {
+            // Update basic meta tags
+            if (title) {
+                document.title = title;
+                document.querySelector('meta[property="og:title"]').setAttribute('content', title);
+                document.querySelector('meta[name="twitter:title"]').setAttribute('content', title);
+            }
+            if (description) {
+                document.querySelector('meta[name="description"]').setAttribute('content', description);
+                document.querySelector('meta[property="og:description"]').setAttribute('content', description);
+                document.querySelector('meta[name="twitter:description"]').setAttribute('content', description);
+            }
+            if (keywords) {
+                document.querySelector('meta[name="keywords"]').setAttribute('content', keywords);
+            }
+
+            // Add additional meta tags for better indexing
+            const additionalMetaTags = [
+                { name: 'robots', content: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' },
+                { name: 'googlebot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' },
+                { name: 'bingbot', content: 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1' }
+            ];
+
+            additionalMetaTags.forEach(tag => {
+                let metaTag = document.querySelector(`meta[name="${tag.name}"]`);
+                if (!metaTag) {
+                    metaTag = document.createElement('meta');
+                    metaTag.setAttribute('name', tag.name);
+                    document.head.appendChild(metaTag);
+                }
+                metaTag.setAttribute('content', tag.content);
+            });
+        }
+
+        function updateContentStructure(h1, h2s, content) {
+            // Update H1
+            const mainHeading = document.querySelector('h1');
+            if (mainHeading && h1) {
+                mainHeading.textContent = h1;
+            }
+
+            // Update H2s
+            const subHeadings = document.querySelectorAll('h2');
+            h2s.forEach((h2, index) => {
+                if (subHeadings[index]) {
+                    subHeadings[index].textContent = h2;
+                }
+            });
+
+            // Update content sections
+            const contentSections = document.querySelectorAll('.content-section');
+            if (content && contentSections.length > 0) {
+                contentSections.forEach(section => {
+                    section.innerHTML = content;
+                });
+            }
+        }
+
+        function updateStructuredData(title, description, keywords) {
+            const structuredData = {
+                "@context": "https://schema.org",
+                "@type": "WebApplication",
+                "name": title || "PromptWhiz",
+                "description": description,
+                "applicationCategory": "Productivity",
+                "operatingSystem": "Any",
+                "offers": {
+                    "@type": "Offer",
+                    "price": "0",
+                    "priceCurrency": "USD"
+                },
+                "keywords": keywords,
+                "author": {
+                    "@type": "Organization",
+                    "name": "PromptWhiz"
+                }
+            };
+
+            let scriptTag = document.querySelector('script[type="application/ld+json"]');
+            if (!scriptTag) {
+                scriptTag = document.createElement('script');
+                scriptTag.type = 'application/ld+json';
+                document.head.appendChild(scriptTag);
+            }
+            scriptTag.textContent = JSON.stringify(structuredData, null, 2);
+        }
+
+        function addSchemaMarkup() {
+            // Add FAQ Schema
+            const faqSchema = {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": "What is PromptWhiz?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "PromptWhiz is a powerful AI prompt generator that helps users create high-quality prompts for ChatGPT, MidJourney, and DALL·E."
+                        }
+                    },
+                    {
+                        "@type": "Question",
+                        "name": "How does PromptWhiz work?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "PromptWhiz uses advanced AI to generate optimized prompts based on your input. Simply select a category, describe what you want, and get a professionally crafted prompt instantly."
+                        }
+                    }
+                ]
+            };
+
+            let faqScript = document.createElement('script');
+            faqScript.type = 'application/ld+json';
+            faqScript.textContent = JSON.stringify(faqSchema, null, 2);
+            document.head.appendChild(faqScript);
+        }
+
+        // Start enhanced SEO optimization when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if 24 hours have passed since last optimization
+            const lastOptimization = localStorage.getItem('lastSEOOptimization');
+            const now = Date.now();
+            
+            if (!lastOptimization || (now - parseInt(lastOptimization)) >= 24 * 60 * 60 * 1000) {
+                optimizeSEO();
+                localStorage.setItem('lastSEOOptimization', now.toString());
+            } else {
+                // Schedule next optimization
+                const timeUntilNext = 24 * 60 * 60 * 1000 - (now - parseInt(lastOptimization));
+                setTimeout(optimizeSEO, timeUntilNext);
+                console.log('Next SEO optimization scheduled for:', new Date(now + timeUntilNext).toLocaleString());
+            }
+            
+            // Add performance monitoring
+            if ('performance' in window) {
+                window.addEventListener('load', () => {
+                    const perfData = window.performance.timing;
+                    const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
+                    console.log('Page Load Time:', pageLoadTime);
+                    
+                    // Report to analytics if load time is good
+                    if (pageLoadTime < 3000) {
+                        console.log('Excellent page load performance');
+                    }
+                });
+            }
+        });
+    </script>
+    <!-- End Enhanced SEO Optimization Script -->
+</body>
+</html>
